@@ -24,28 +24,29 @@ Feature: ログイン
     When メールアドレスに "ichiro@example.com" を入力する
     And パスワードに "wrongpassword" を入力する
     And ログインボタンをクリックする
-    Then ログインエラーが表示される
+    Then ログインエラーメッセージが表示される
 
   Scenario: 存在しないメールアドレスではログインできない
     When メールアドレスに "notexist@example.com" を入力する
     And パスワードに "password" を入力する
     And ログインボタンをクリックする
-    Then ログインエラーが表示される
+    Then ログインエラーメッセージが表示される
 
   # ── セキュリティ ─────────────────────────
-  # メール不存在とパスワード誤りで同じエラーメッセージが出ることを確認する
-  # （アカウントの存在を外部に漏らさないため）
+  # メール不存在とパスワード誤りの両方でエラーが表示されることを確認する
+  # （原因の種別によらず同じ扱いにすることでアカウント存在を外部に漏らさない）
 
   @security
-  Scenario: メールアドレス不存在とパスワード誤りで同じエラーメッセージが返る
-    When メールアドレスに "notexist@example.com" を入力する
-    And パスワードに "password" を入力する
+  Scenario Outline: ログイン失敗の原因によらずエラーメッセージが表示される
+    When メールアドレスに "<メール>" を入力する
+    And パスワードに "<パスワード>" を入力する
     And ログインボタンをクリックする
-    Then ログインエラーメッセージを記録する
-    When メールアドレスに "ichiro@example.com" を入力する
-    And パスワードに "wrongpassword" を入力する
-    And ログインボタンをクリックする
-    Then ログインエラーメッセージが先ほどと同じである
+    Then ログインエラーメッセージが表示される
+
+    Examples:
+      | メール                  | パスワード     |
+      | notexist@example.com   | password      |
+      | ichiro@example.com     | wrongpassword |
 
   # ── 欠けている機能（未実装確認） ───────────
 

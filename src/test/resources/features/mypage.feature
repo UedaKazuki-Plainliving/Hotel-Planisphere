@@ -14,7 +14,6 @@ Feature: マイページ
     And 会員ランクが表示されている
 
   Scenario: プレミアム会員の会員ランクがマイページに表示される
-    Given "ichiro@example.com" でログインしている
     When マイページを開く
     Then マイページに "プレミアム会員" と表示される
 
