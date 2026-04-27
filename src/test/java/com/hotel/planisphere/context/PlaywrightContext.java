@@ -5,11 +5,16 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.Video;
 import com.microsoft.playwright.options.ViewportSize;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class PlaywrightContext {
 
     public static final String BASE_URL = "https://hotel-example-site.takeyaqa.dev/ja/";
+    public static final Path VIDEO_DIR  = Paths.get("target/videos");
 
     private static final Playwright playwright;
     private static final Browser browser;
@@ -17,7 +22,7 @@ public class PlaywrightContext {
     static {
         playwright = Playwright.create();
         browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(true));
+                new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(300));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             browser.close();
             playwright.close();
@@ -29,7 +34,8 @@ public class PlaywrightContext {
     private static Page popupPage;
 
     public static void newScenario() {
-        context = browser.newContext();
+        context = browser.newContext(new Browser.NewContextOptions()
+                .setRecordVideoDir(VIDEO_DIR));
         page = context.newPage();
         popupPage = null;
     }
@@ -37,9 +43,18 @@ public class PlaywrightContext {
     public static void newScenarioWithViewport(int width, int height) {
         if (context != null) context.close();
         context = browser.newContext(new Browser.NewContextOptions()
-                .setViewportSize(new ViewportSize(width, height)));
+                .setViewportSize(new ViewportSize(width, height))
+                .setRecordVideoDir(VIDEO_DIR));
         page = context.newPage();
         popupPage = null;
+    }
+
+    public static Video currentVideo() {
+        try {
+            return page != null ? page.video() : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static void endScenario() {

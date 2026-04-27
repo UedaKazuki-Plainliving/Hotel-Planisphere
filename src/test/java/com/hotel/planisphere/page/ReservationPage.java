@@ -75,14 +75,19 @@ public class ReservationPage {
     }
 
     public static void submit() {
+        // Wait for the button to be enabled, then click (no navigation wait here —
+        // validation errors keep the page on reserve.html without navigating)
         popupPage().waitForFunction("!document.getElementById('submit-button').disabled");
-        popupPage().waitForNavigation(() -> popupPage().click("#submit-button"));
-        // Wait for confirm.html's JS to populate the guest name field
-        popupPage().waitForSelector("#username:not(:empty)");
+        popupPage().click("#submit-button");
     }
 
     public static boolean isConfirmPageVisible() {
-        return popupPage().url().contains("confirm.html");
+        // Valid submissions navigate to confirm.html; wait for that URL
+        popupPage().waitForURL("**/confirm.html",
+                new Page.WaitForURLOptions().setTimeout(10000));
+        // Wait for JS to populate the confirmation details
+        popupPage().waitForSelector("#username:not(:empty)");
+        return true;
     }
 
     public static boolean confirmPageContains(String text) {

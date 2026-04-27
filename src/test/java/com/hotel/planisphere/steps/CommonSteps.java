@@ -4,6 +4,7 @@ import com.hotel.planisphere.context.PlaywrightContext;
 import com.hotel.planisphere.page.LoginPage;
 import com.hotel.planisphere.page.MyPage;
 import com.hotel.planisphere.page.SignupPage;
+import com.microsoft.playwright.Page;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -49,7 +50,10 @@ public class CommonSteps {
 
     @Then("トップページに遷移する")
     public void assertOnTopPage() {
-        PlaywrightContext.page().waitForURL("**/index.html");
+        // /ja/index.html または /ja/ いずれもトップページとして受け入れる
+        PlaywrightContext.page().waitForURL(
+            url -> url.contains("index.html") || url.endsWith("/ja/") || url.endsWith("/ja"),
+            new Page.WaitForURLOptions().setTimeout(10000));
     }
 
     @Then("マイページに {string} と表示される")
