@@ -25,6 +25,8 @@ jobs:
 
       - name: Run tests
         run: mvn -B test
+        env:
+          CI: true
 
       - name: Upload Cucumber report
         if: always()
@@ -32,3 +34,19 @@ jobs:
         with:
           name: cucumber-reports
           path: target/cucumber-reports/
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: target/screenshots/
+          if-no-files-found: ignore
+
+      - name: Upload videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: videos
+          path: target/videos/
+          if-no-files-found: ignore

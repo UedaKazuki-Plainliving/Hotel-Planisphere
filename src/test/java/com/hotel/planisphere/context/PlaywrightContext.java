@@ -21,8 +21,12 @@ public class PlaywrightContext {
 
     static {
         playwright = Playwright.create();
+        boolean headless = "true".equalsIgnoreCase(System.getenv("CI"))
+                || "true".equalsIgnoreCase(System.getenv("PLAYWRIGHT_HEADLESS"));
         browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(300));
+                new BrowserType.LaunchOptions()
+                        .setHeadless(headless)
+                        .setSlowMo(headless ? 0 : 300));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             browser.close();
             playwright.close();
