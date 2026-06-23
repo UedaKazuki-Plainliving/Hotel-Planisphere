@@ -18,15 +18,17 @@ public class LoginPage {
     }
 
     public static void submit() {
-        page().click("#login-button");
+        page().click("button[type='submit']");
     }
 
-    public static boolean hasLoginError() {
-        String msg = page().locator("#email-message").textContent();
-        return msg != null && !msg.isBlank();
+    public static boolean hasErrorMessage() {
+        return page().locator(".invalid-feedback").count() > 0;
     }
 
-    public static String currentUrl() {
-        return page().url();
+    public static String getErrorMessage() {
+        if (hasErrorMessage()) {
+            return page().locator(".invalid-feedback").first().textContent();
+        }
+        return "";
     }
 }
